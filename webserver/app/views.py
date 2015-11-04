@@ -2,7 +2,7 @@
 import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response, flash
+from flask import Flask, request, render_template, g, redirect, Response, flash, session
 from app import app
 from forms import * 
 from models import *
@@ -64,7 +64,16 @@ def signup():
         if form.validate() == False:
             return render_template('signup.html', form=form)
         else:
-            return "[1] Create a new user [2] sign in the user [3] redirect to the user's profile"
+            firstname = form.firstname.data
+            lastname = form.lastname.data
+            email = form.email.data
+            password = form.password.data
+            
+            cursor = g.conn.execute("INSERT INTO Users(firstname, lastname, email, password) \
+                    VALUES ('%s', '%s', '%s', '%s')" % (firstname, lastname, email, password))
+            cursor.close()
+            return "OK"
+
     elif request.method == 'GET':
         return render_template('signup.html', form=form)
 
@@ -76,7 +85,7 @@ def contact():
             flash('All fields are required.')
             return render_template('contact.html', form=form)
         else:
-            return 'Form posted.'
+            return "Form posted"
 
     elif request.method == 'GET':
         return render_template('contact.html', form=form)

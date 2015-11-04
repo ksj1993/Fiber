@@ -23,7 +23,7 @@ class SignupForm(Form):
     password = PasswordField('Password', [validators.Required("Please enter a password.")])
     submit = SubmitField("Create account")
     
-    def __init__(self, *args, **kwards):
+    def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
         g.conn = engine.connect()
     
@@ -31,10 +31,12 @@ class SignupForm(Form):
         if not Form.validate(self):
             return False
         
-        cursor = g.conn.execute("SELECT email FROM Users WHERE email = " + self.email.data.lower())
-        if cursor[0]:
-            self.email.errors.append("Email already taken")
+        cursor = g.conn.execute("SELECT email FROM Users WHERE email = '" + self.email.data.lower()+ "'")
+        if cursor.fetchone():
+            print "Email is taken"
             cursor.close()
+            return False
+
 #return False
         cursor.close()
         return True
