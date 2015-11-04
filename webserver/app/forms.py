@@ -10,10 +10,10 @@ DATABASEURI = "sqlite:///test.db"
 engine = create_engine(DATABASEURI)
  
 class ContactForm(Form):
-    name = TextField("Name")
-    email = TextField("Email")
-    subject = TextField("Subject")
-    message = TextAreaField("Message")
+    name = TextField("Name", [validators.Required()])
+    email = TextField("Email", [validators.Required(), validators.Email()])
+    subject = TextField("Subject", [validators.Required()])
+    message = TextAreaField("Message", [validators.Required()])
     submit = SubmitField("Send")
 
 class SignupForm(Form):
@@ -35,7 +35,7 @@ class SignupForm(Form):
         if cursor[0]:
             self.email.errors.append("Email already taken")
             cursor.close()
-            return False
+#return False
         cursor.close()
         return True
 
