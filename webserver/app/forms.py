@@ -19,7 +19,7 @@ class ContactForm(Form):
 class SignupForm(Form):
     firstname = TextField("First name",  [validators.Required("Please enter your first name.")])
     lastname = TextField("Last name",  [validators.Required("Please enter your last name.")])
-    email = TextField("Email",  [validators.Required("Please enter your email address."), validators.Email("Please enter your email address.")])
+    email = TextField("Email",  [validators.Required("Please enter your email address."), validators.Email("Please enter a valid email address.")])
     password = PasswordField('Password', [validators.Required("Please enter a password.")])
     submit = SubmitField("Create account")
     
@@ -30,8 +30,8 @@ class SignupForm(Form):
     def validate(self):
         if not Form.validate(self):
             return False
-        
-        cursor = g.conn.execute("SELECT email FROM Users WHERE email = '" + self.email.data.lower()+ "'")
+        q = "SELECT email FROM Users WHERE email = ?"        
+        cursor = g.conn.execute(q, (self.email.data.lower(),))
         if cursor.fetchone():
             print "Email is taken"
             cursor.close()
@@ -41,6 +41,26 @@ class SignupForm(Form):
         cursor.close()
         return True
 
-            
-    
+class SigninForm(Form):
+    email = TextField("Email", [validators.Required("Please enter your email address"), validators.Email("Please enter a valid email address")])
+    password = PasswordField('Password', [validators.Required("Please enter a password")])
+    submit = SubmitField("Sign In")
+
+    def __init__(self, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
+
+    def validate(self):
+        if not Form.validate(self):
+            return False
+
+        q = "SELECT * FROM Users WHERE email = ?"
+        cursor = g.conn.execute(q, (self.email.data.lower(),))
+        user = cursor.fetchone()
+        print user
+        #check password
+        if user:
+            return True
+        else:
+            self.email.errors.append("Invalid email or password")
+            return False
 

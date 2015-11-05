@@ -2,7 +2,7 @@
 import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response, flash, session
+from flask import Flask, request, render_template, g, redirect, Response, flash, session, url_for
 from app import app
 from forms import * 
 from models import *
@@ -17,7 +17,6 @@ engine.execute("""CREATE TABLE IF NOT EXISTS test (
     name text,
     email text
 );""")
-engine.execute("""DROP TABLE IF EXISTS Users;""")
 engine.execute("""CREATE TABLE IF NOT EXISTS Users (
     uid serial,
     firstname text,
@@ -64,18 +63,34 @@ def signup():
         if form.validate() == False:
             return render_template('signup.html', form=form)
         else:
-            firstname = form.firstname.data
-            lastname = form.lastname.data
-            email = form.email.data
-            password = form.password.data
+            firstname = str(form.firstname.data)
+            lastname = str(form.lastname.data)
+            email = str(form.email.data)
+            password = str(form.password.data)
             
-            cursor = g.conn.execute("INSERT INTO Users(firstname, lastname, email, password) \
-                    VALUES ('%s', '%s', '%s', '%s')" % (firstname, lastname, email, password))
+            q = "INSERT INTO Users(firstname, lastname, email, password) VALUES (?, ?, ?, ?);" 
+            cursor = g.conn.execute(q,(firstname, lastname, email, password,))
             cursor.close()
-            return "OK"
+            session['email'] = email
+            return redirect(url_for('profile'))
 
     elif request.method == 'GET':
         return render_template('signup.html', form=form)
+
+@app.route('/profile')
+def profile():
+    if 'email' not in session:
+        return redirect(url_for('signin'))
+        
+    q = "SELECT email FROM Users WHERE email=?"
+    email = session['email']
+    cursor = g.conn.execute(q, (email,))
+    user = cursor.fetchone()
+    if user is None:
+        return redirect(url_for('signin'))
+    else:
+        return render_template('profile.html')
+
 
 @app.route('/contact')
 def contact():
@@ -89,4 +104,18 @@ def contact():
 
     elif request.method == 'GET':
         return render_template('contact.html', form=form)
+
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
+    form = SigninForm()
+    
+    if request.method == 'POST'
+        if form.validate() == False
+            return render_template('signin.html', form=form
+        else:
+            session['email'] = form.email.data
+            return redirect(url_for('profile'))
+
+    elif request.method == 'GET':
+        return render_template('signin.html', form=form)
 
