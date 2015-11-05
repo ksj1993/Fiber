@@ -6,8 +6,6 @@ from sqlalchemy.pool import NullPool
 from app import app
 from flask import g
 
-DATABASEURI = "sqlite:///test.db"
-engine = create_engine(DATABASEURI)
  
 class ContactForm(Form):
     name = TextField("Name", [validators.Required()])
@@ -17,20 +15,18 @@ class ContactForm(Form):
     submit = SubmitField("Send")
 
 class SignupForm(Form):
-    firstname = TextField("First name",  [validators.Required("Please enter your first name.")])
-    lastname = TextField("Last name",  [validators.Required("Please enter your last name.")])
+    username = TextField("Username",  [validators.Required("Please enter your last name.")])
     email = TextField("Email",  [validators.Required("Please enter your email address."), validators.Email("Please enter a valid email address.")])
     password = PasswordField('Password', [validators.Required("Please enter a password.")])
     submit = SubmitField("Create account")
     
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
-        g.conn = engine.connect()
     
     def validate(self):
         if not Form.validate(self):
             return False
-        q = "SELECT email FROM Users WHERE email = ?"        
+        q = "SELECT  FROM Users WHERE email = ?"        
         cursor = g.conn.execute(q, (self.email.data.lower(),))
         if cursor.fetchone():
             print "Email is taken"
@@ -42,7 +38,7 @@ class SignupForm(Form):
         return True
 
 class SigninForm(Form):
-    email = TextField("Email", [validators.Required("Please enter your email address"), validators.Email("Please enter a valid email address")])
+    username = TextField("Username", [validators.Required("Please enter your username")])
     password = PasswordField('Password', [validators.Required("Please enter a password")])
     submit = SubmitField("Sign In")
 
@@ -53,14 +49,14 @@ class SigninForm(Form):
         if not Form.validate(self):
             return False
 
-        q = "SELECT * FROM Users WHERE email = ?"
-        cursor = g.conn.execute(q, (self.email.data.lower(),))
+        q = "SELECT username FROM Users WHERE username = %s"
+        cursor = g.conn.execute(q, (self.username.data,))
         user = cursor.fetchone()
         print user
         #check password
         if user:
             return True
         else:
-            self.email.errors.append("Invalid email or password")
+            self.username.errors.append("Invalid username or password")
             return False
 

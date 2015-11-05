@@ -3,7 +3,7 @@
 {% block content %}
   <h2>Sign In</h2>
  
-  {% for message in form.email.errors %}
+  {% for message in form.username.errors %}
     <div class="flash">{{ message }}</div>
   {% endfor %}
    
@@ -14,8 +14,8 @@
   <form action="{{ url_for('signin') }}" method=post>
     {{ form.hidden_tag() }}
      
-    {{ form.email.label }}
-    {{ form.email }}
+    {{ form.username.label }}
+    {{ form.username }}
      
     {{ form.password.label }}
     {{ form.password }}

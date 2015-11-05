@@ -7,25 +7,9 @@ from app import app
 from forms import * 
 from models import *
 
-DATABASEURI = "sqlite:///test.db"
+DATABASEURI = "postgresql://ksj2114:833@w4111db1.cloudapp.net:5432/proj1part2"
 
 engine = create_engine(DATABASEURI)
-
-engine.execute("""DROP TABLE IF EXISTS test;""")
-engine.execute("""CREATE TABLE IF NOT EXISTS test (
-    id serial,
-    name text,
-    email text
-);""")
-engine.execute("""CREATE TABLE IF NOT EXISTS Users (
-    uid serial,
-    firstname text,
-    lastname text,
-    email text,
-    password text,
-    PRIMARY KEY(uid)
-);""")
-
 
 @app.before_request
 def before_request():
@@ -52,19 +36,21 @@ def index():
 @app.route('/signup', methods=["POST", "GET"])
 def signup():
     form = SignupForm()
+
+    if 'username' in session:
+        return redirect(url_for('profile'))
     if request.method == 'POST':
         if form.validate() == False:
             return render_template('signup.html', form=form)
         else:
-            firstname = str(form.firstname.data)
-            lastname = str(form.lastname.data)
+            username = str(form.username.data)
             email = str(form.email.data)
             password = str(form.password.data)
             
-            q = "INSERT INTO Users(firstname, lastname, email, password) VALUES (?, ?, ?, ?);" 
-            cursor = g.conn.execute(q,(firstname, lastname, email, password,))
+            q = "INSERT INTO Users(username, password, email) VALUES (%s,%s,%s);" 
+            cursor = g.conn.execute(q,(username, pwd, email,))
             cursor.close()
-            session['email'] = email
+            session['username'] =username 
             return redirect(url_for('profile'))
 
     elif request.method == 'GET':
@@ -72,13 +58,14 @@ def signup():
 
 @app.route('/profile')
 def profile():
-    if 'email' not in session:
+    if 'username' not in session:
         return redirect(url_for('signin'))
         
-    q = "SELECT email FROM Users WHERE email=?"
-    email = session['email']
-    cursor = g.conn.execute(q, (email,))
+    q = "SELECT username FROM Users WHERE username=%s"
+    username = session['username']
+    cursor = g.conn.execute(q, (username,))
     user = cursor.fetchone()
+    cursor.close()
     if user is None:
         return redirect(url_for('signin'))
     else:
@@ -100,12 +87,15 @@ def contact():
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
     form = SigninForm()
-    
+   
+    if 'username' in session:
+        return redirect(url_for('profile'))
+
     if request.method == 'POST':
         if form.validate() == False:
             return render_template('signin.html', form=form)
         else:
-            session['email'] = form.email.data
+            session['username'] = form.username.data
             return redirect(url_for('profile'))
 
     elif request.method == 'GET':
@@ -113,8 +103,8 @@ def signin():
 
 @app.route('/signout')
 def signout():
-    if 'email' not in session:
+    if 'username' not in session:
         return redirect(url_for('signin'))
 
-    session.pop('email', None)
+    session.pop('username', None)
     return redirect(url_for('index'))
