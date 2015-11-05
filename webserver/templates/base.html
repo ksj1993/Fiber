@@ -7,7 +7,7 @@
         <ul class="menu">
           <li><a href="{{ url_for('index') }}">Home</a></li>
           <li><a href="{{ url_for('contact') }}">Contact</a></li>
-          {% if 'email' in session %}
+          {% if 'username' in session %}
           <li><a href="{{ url_for('profile') }}">Profile</a></li>
           <li><a href="{{ url_for('signout') }}">Sign Out</a></li>
           {% else %}

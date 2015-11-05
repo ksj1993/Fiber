@@ -16,8 +16,3 @@ class User(db.Model):
         self.email = email.lower()
         self.set_password(pwd)
     
-    def set_password(self, pwd):
-        self.pwd = generate_password_hash(pwd)
-
-    def check_password(self, pwd):
-        return check_password_hash(self.pwd, pwd)

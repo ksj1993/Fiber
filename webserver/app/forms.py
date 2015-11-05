@@ -49,12 +49,13 @@ class SigninForm(Form):
         if not Form.validate(self):
             return False
 
-        q = "SELECT username FROM Users WHERE username = %s"
+        q = "SELECT * FROM Users WHERE username = %s"
         cursor = g.conn.execute(q, (self.username.data,))
         user = cursor.fetchone()
-        print user
-        #check password
-        if user:
+        
+        # TODO implement password hashing via models?
+        #user = User(user['username'], user['pwd'], user['email'])
+        if user and user['pwd'] == self.password.data: 
             return True
         else:
             self.username.errors.append("Invalid username or password")
