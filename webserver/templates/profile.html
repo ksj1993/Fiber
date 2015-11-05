@@ -2,9 +2,8 @@
 {% block content %}
 <div>
 <h3> Welcome {{ session['username']}}! <h3>
-<audio controls>
-<source src="{{ filename }}" type="audio/mpeg">
-</audio>
+
+<a href ="{{ filename }}">Test podcast</a>
 </div>
 {% endblock %}
 

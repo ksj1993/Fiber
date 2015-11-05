@@ -66,12 +66,15 @@ def profile():
     cursor = g.conn.execute(q, (username,))
     user = cursor.fetchone()
     cursor.close()
-    mp3file = "/home/azureuser/Podcasts/ToniMorrison.mp3"
+    link = "ToniMorrison.mp3"
     if user is None:
         return redirect(url_for('signin'))
     else:
-        return render_template('profile.html', filename=mp3file)
+        return render_template('profile.html', filename=link)
 
+@app.route('/<filename>')
+def play(filename):
+    return render_template('play.html', filename=filename)
 
 @app.route('/contact')
 def contact():
