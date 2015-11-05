@@ -46,14 +46,7 @@ def teardown_request(exception):
 
 @app.route('/', methods=["POST", "GET"])
 def index():
-    print request.args
-    cursor = g.conn.execute("SELECT name FROM test")
-    names = []
-    for result in cursor:
-        names.append(result['name'])  # can also be accessed using result[0]
-    cursor.close()
-    context = dict( data = names )
-    return render_template("index.html", **context)
+    return render_template("index.html")
 
 # from tutorial http://code.tutsplus.com/tutorials/intro-to-flask-signing-in-and-out--net-29982
 @app.route('/signup', methods=["POST", "GET"])
@@ -101,7 +94,6 @@ def contact():
             return render_template('contact.html', form=form)
         else:
             return "Form posted"
-
     elif request.method == 'GET':
         return render_template('contact.html', form=form)
 
@@ -109,9 +101,9 @@ def contact():
 def signin():
     form = SigninForm()
     
-    if request.method == 'POST'
-        if form.validate() == False
-            return render_template('signin.html', form=form
+    if request.method == 'POST':
+        if form.validate() == False:
+            return render_template('signin.html', form=form)
         else:
             session['email'] = form.email.data
             return redirect(url_for('profile'))
@@ -119,3 +111,10 @@ def signin():
     elif request.method == 'GET':
         return render_template('signin.html', form=form)
 
+@app.route('/signout')
+def signout():
+    if 'email' not in session:
+        return redirect(url_for('signin'))
+
+    session.pop('email', None)
+    return redirect(url_for('index'))
