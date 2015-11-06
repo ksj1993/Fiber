@@ -8,8 +8,9 @@ from forms import *
 from models import *
 
 DATABASEURI = "postgresql://ksj2114:833@w4111db1.cloudapp.net:5432/proj1part2"
-
 engine = create_engine(DATABASEURI)
+
+music_dir = '/home/azureuser/Fiber/webserver/static'
 
 @app.before_request
 def before_request():
@@ -66,15 +67,30 @@ def profile():
     cursor = g.conn.execute(q, (username,))
     user = cursor.fetchone()
     cursor.close()
-    link = "ToniMorrison.mp3"
     if user is None:
         return redirect(url_for('signin'))
     else:
-        return render_template('profile.html', filename=link)
+        tags = []
+        q = "SELECT t.name as name FROM users as u INNER JOIN chooses as c \
+            ON u.uid = c.uid INNER JOIN tags as t ON c.tid = t.tid WHERE u.username = %s" 
+        cursor = g.conn.execute(q, (username,)) 
+        for result in cursor:
+            tags.append(result['name'])
+        cursor.close()
 
-@app.route('/<filename>')
+        podcasts = []
+        q = "SELECT p.name as name FROM users as u INNER JOIN chooses as c ON u.uid = c.uid \
+             INNER JOIN tags as t ON c.tid = t.tid INNER JOIN described_by as d  \
+             ON t.tid = d.tid INNER JOIN podcasts as p ON d.pid = p.pid WHERE u.username = %s"
+        cursor = g.conn.execute(q, (username,))
+        for result in cursor:
+            podcasts.append(result['name'])
+        cursor.close()
+        return render_template('profile.html', tags=tags, podcasts=podcasts)
+
+@app.route('/static/<filename>')
 def play(filename):
-    return render_template('play.html', filename=filename)
+    return render_template('play.html', music_file=filename)
 
 @app.route('/contact')
 def contact():

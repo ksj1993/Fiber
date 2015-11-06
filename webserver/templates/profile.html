@@ -2,8 +2,15 @@
 {% block content %}
 <div>
 <h3> Welcome {{ session['username']}}! <h3>
-
-<a href ="{{ filename }}">Test podcast</a>
+<p> Your tags: </p>
+{% for n in tags %}
+<div> {{ n }} </div>
+{% endfor %}
+<br>
+<p> Your podcast queue: </p>
+{% for n in podcasts %}
+<a href="/static/{{ n }}"> {{ n }} </a> </div>
+{% endfor %}
 </div>
 {% endblock %}
 
