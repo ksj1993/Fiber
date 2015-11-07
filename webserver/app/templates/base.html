@@ -1,0 +1,47 @@
+<html>
+  <head>
+  <title> Fiber </title>
+
+  <link rel="stylesheet" href="static/css/main.css">
+
+  <!-- Google's Material Design Library for UI styling -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.pink-red.min.css">
+  
+  <script src="https://storage.googleapis.com/code.getmdl.io/1.0.0/material.min.js"></script>
+  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+
+  </head>
+  <body>
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <header class="mdl-layout__header document-header">
+        <div class="mdl-layout__header-row">
+          <!-- Logo -->
+          <span class="mdl-layout-title">
+            <a class="mdl-navigation__link title text" href="{{ url_for('index') }}">Fiber</a>
+          </span>
+          <!-- Add spacer, to align navigation to the right -->
+          <div class="mdl-layout-spacer"></div>
+          <!-- Navigation -->
+          <nav class="mdl-navigation document-navigation">
+            <a class="mdl-navigation__link text" href="{{ url_for('index') }}">Home</a>
+            <a class="mdl-navigation__link text" href="{{ url_for('index') }}">About Us</a>
+            <a class="mdl-navigation__link text" href="{{ url_for('contact') }}">Contact</a>
+            {% if 'username' in session %}
+            <a class="mdl-navigation__link text" href="{{ url_for('profile') }}">Profile</a>
+            <a class="mdl-navigation__link text" href="{{ url_for('signout') }}">Sign Out</a>
+            {% else %}
+            <a class="mdl-navigation__link text" href="{{ url_for('signup') }}">Sign Up</a>
+            <a class="mdl-navigation__link text" href="{{ url_for('signin') }}">Sign In</a>
+            {% endif %}
+          </nav>
+        </div>
+      </header>
+    </div>
+    <main class="mdl-layout__content document-body">
+      <div class="page-content">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </body>
+</html>
