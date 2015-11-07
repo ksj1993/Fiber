@@ -1,0 +1,5 @@
+.*
+webserver/app/*.pyc
+webserver/bin/*
+webserver/include/*
+webserver/lib/*
