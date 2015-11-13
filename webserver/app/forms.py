@@ -53,6 +53,30 @@ class SignupForm(Form):
         cursor.close()
         return True
 
+class OrgSigninForm(Form):
+    username = TextField("Username", [validators.Required("Please enter your username")])
+    password = PasswordField('Password', [validators.Required("Please enter a password")])
+    submit = SubmitField("Sign In")
+
+    def __init__(self, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
+
+    def validate(self):
+        if not Form.validate(self):
+            return False
+
+        q = "SELECT * FROM orgs WHERE usr = %s"
+        cursor = g.conn.execute(q, (self.username.data,))
+        user = cursor.fetchone()
+        cursor.close() 
+        # TODO implement password hashing via models?
+        #user = User(user['username'], user['pwd'], user['email'])
+        if user and user['pwd'] == self.password.data: 
+            return True
+        else:
+            self.username.errors.append("Invalid username or password")
+            return False
+
 class SigninForm(Form):
     username = TextField("Username", [validators.Required("Please enter your username")])
     password = PasswordField('Password', [validators.Required("Please enter a password")])
@@ -68,7 +92,7 @@ class SigninForm(Form):
         q = "SELECT * FROM Users WHERE username = %s"
         cursor = g.conn.execute(q, (self.username.data,))
         user = cursor.fetchone()
-        
+        cursor.close() 
         # TODO implement password hashing via models?
         #user = User(user['username'], user['pwd'], user['email'])
         if user and user['pwd'] == self.password.data: 

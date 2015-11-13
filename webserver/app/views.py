@@ -32,11 +32,6 @@ def teardown_request(exception):
     except Exception as e:
         pass
 
-@app.route('/org', methods=["POST", "GET"])
-def org():
-    
-    return render_template("org.html")
-
 @app.route('/', methods=["POST", "GET"])
 def index():
     return render_template("index.html")
@@ -172,22 +167,25 @@ def play():
     cursor.close()
 
 
-    n = "SELECT p.pid FROM podcasts as p WHERE p.name=%s;"
-    cursor = g.conn.execute(n, (podcast,))
+    q = "SELECT p.pid FROM podcasts as p WHERE p.name=%s;"
+    cursor = g.conn.execute(q, (podcast,))
     pids = cursor.fetchone()
     pid = pids['pid']
     cursor.close()
     
-    n = "SELECT u.uid FROM users as u WHERE u.username=%s;"
-    cursor = g.conn.execute(n, (username,))
+    q = "SELECT u.uid FROM users as u WHERE u.username=%s;"
+    cursor = g.conn.execute(q, (username,))
     uids = cursor.fetchone()
     uid = uids['uid']
     cursor.close()
     
-    p = "INSERT INTO records(pid, uid) values (%s,%s)"
-    cursor = g.conn.execute(p, (pid, uid,))
+    q = "INSERT INTO records(pid, uid) values (%s,%s)"
+    cursor = g.conn.execute(q, (pid, uid,))
     cursor.close()
-    print "Inserted record into records table"
+    
+    q = "UPDATE podcasts SET playcount = playcount + 1 WHERE pid =%s"
+    cursor = g.conn.execute(q, (pid,))
+    cursor.close()
     return render_template('play.html', podcast = podcast_name, descr = podcast_descr)
 
 @app.route('/contact')
@@ -201,6 +199,36 @@ def contact():
             return "Form posted"
     elif request.method == 'GET':
         return render_template('contact.html', form=form)
+
+@app.route('/org', methods=['GET', 'POST'])
+def org():
+    if 'orguser' not in session:
+        return redirect(url_for('orgsignin'))
+    
+    usr = session['orguser']
+    podcast_info={}
+    q = "SELECT p.name, p.playcount FROM podcasts as p INNER JOIN orgs as o ON p.oid = o.oid WHERE o.usr =%s"
+    cursor = g.conn.execute(q,(usr,))
+    for result in cursor:
+        podcast_info[result['name']] = result['playcount']
+
+    return render_template('org.html', info = podcast_info)
+
+@app.route('/orgsignin', methods=['GET', 'POST'])
+def orgsignin():
+    form = OrgSigninForm()
+    if 'orguser' in session:
+        return redirect(url_for('org'))
+
+    if request.method == 'POST':
+        if form.validate == False:
+            return render_template('orgsignin.html', form=form)
+        else:
+            session['orguser'] = form.username.data
+            return redirect(url_for('org'))
+    elif request.method == 'GET':
+        return render_template('orgsignin.html', form=form)
+
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
