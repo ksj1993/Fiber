@@ -110,9 +110,14 @@ def profile():
         cursor.close()
 
         podcasts = []
-        q = "SELECT p.name as name FROM users as u INNER JOIN chooses as c ON u.uid = c.uid \
-             INNER JOIN tags as t ON c.tid = t.tid INNER JOIN described_by as d  \
-             ON t.tid = d.tid INNER JOIN podcasts as p ON d.pid = p.pid WHERE u.username = %s"
+        q = "SELECT p.name FROM users as u \
+            INNER JOIN chooses as c ON u.uid = c.uid \
+            INNER JOIN tags as t ON c.tid = t.tid \
+            INNER JOIN described_by as d ON t.tid = d.tid \
+            INNER JOIN podcasts as p ON d.pid = p.pid \
+            WHERE u.username = %s AND p.pid NOT IN \
+            (SELECT r.pid FROM records as r \
+            INNER JOIN users as u ON r.uid = u.uid WHERE u.username =  %s);" 
         cursor = g.conn.execute(q, (username,))
         for result in cursor:
             podcasts.append(result['name'])
