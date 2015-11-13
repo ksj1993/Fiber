@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="mdl-layout__container contact-form">
+  <h3>Upload</h3>
+  <form class="form-group" role="form" method="POST" action="{{ url_for('upload') }}">
+    {{ form.hidden_tag() }}
+    <div class="mdl-textfield mdl-js-textfield">
+      {{ form.oid(class="mdl-textfield__input", type="text") }}
+      <label class="mdl-textfield__label">{{ form.oid.label }}</label>
+    </div><br>
+    <div class="mdl-textfield mdl-js-textfield">
+      {{ form.name(class="mdl-textfield__input", type="text") }}
+      <label class="mdl-textfield__label">{{ form.name.label }}</label>
+    </div><br>
+    <div class="mdl-textfield mdl-js-textfield">
+      {{ form.poddate(class="mdl-textfield__input", type="text") }}
+      <label class="mdl-textfield__label">{{ form.poddate.label }}</label>
+    </div><br>
+    <div class="mdl-textfield mdl-js-textfield">
+      {{ form.descr(class="mdl-textfield__input", type="text") }}
+      <label class="mdl-textfield__label">{{ form.descr.label }}</label>
+    </div><br>
+    <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">SUBMIT</button>
+  </form>
+</div>
+
+{% endblock %}

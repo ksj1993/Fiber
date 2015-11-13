@@ -14,6 +14,23 @@ class ContactForm(Form):
     message = TextAreaField("Message", [validators.Required()])
     submit = SubmitField("Send")
 
+class UploadForm(Form):
+    oid = TextField("oid",  [validators.Required("Please enter oid")])
+    name = TextField("name",  [validators.Required("Please podcast name")])
+    poddate = TextField('poddate', [validators.Required("Please enter podcast date")])
+    descr = TextField('descr', [validators.Required("Please enter podcast descr")])
+
+    submit = SubmitField("Upload podcast")
+    
+    def __init__(self, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
+    
+    def validate(self):
+        if not Form.validate(self):
+            return False
+        return True
+
+
 class SignupForm(Form):
     username = TextField("Username",  [validators.Required("Please enter your last name.")])
     email = TextField("Email",  [validators.Required("Please enter your email address."), validators.Email("Please enter a valid email address.")])
@@ -26,7 +43,7 @@ class SignupForm(Form):
     def validate(self):
         if not Form.validate(self):
             return False
-        q = "SELECT  FROM Users WHERE email = ?"        
+        q = "SELECT  FROM Users WHERE email = %s"        
         cursor = g.conn.execute(q, (self.email.data.lower(),))
         if cursor.fetchone():
             print "Email is taken"
