@@ -106,15 +106,23 @@ def profile():
         
         # Give back all_tags and user_tags instead of this bs
 
-        tags = []
-        q = "SELECT t.name as name FROM users as u INNER JOIN chooses as c \
-            ON u.uid = c.uid INNER JOIN tags as t ON c.tid = t.tid WHERE u.username = %s" 
-        cursor = g.conn.execute(q, (username,)) 
+        all_tags = []
+        p = "SELECT t.name FROM tags;"
+        cursor = g.conn.execute(p)
         for result in cursor:
-            tags.append(result['name'])
+            all_tags.append(result['name'])
         cursor.close()
 
-        return render_template('profile.html', tags=tags)
+        q = "SELECT t.name as name FROM users as u INNER JOIN chooses as c \
+            ON u.uid = c.uid INNER JOIN tags as t ON c.tid = t.tid WHERE u.username = %s;" 
+
+        my_tags = []
+        cursor = g.conn.execute(q, (username,)) 
+        for result in cursor:
+            my_tags.append(result['name'])
+        cursor.close()
+
+        return render_template('profile.html', all_tags=all_tags, my_tags=my_tags)
 
 @app.route('/static/<filename>')
 def play(filename):
@@ -156,7 +164,7 @@ def play(filename):
     cursor = g.conn.execute(p, (pid, uid,))
     cursor.close()
     print "Inserted record into records table"
-    return render_template('play.html', music_file=filename)
+    return render_template('play.html', filename = filename)
 
 @app.route('/contact')
 def contact():
