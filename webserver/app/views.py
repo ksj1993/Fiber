@@ -32,6 +32,10 @@ def teardown_request(exception):
     except Exception as e:
         pass
 
+@app.route('/org', methods=["POST", "GET"])
+def org():
+    
+    return render_template("org.html")
 
 @app.route('/', methods=["POST", "GET"])
 def index():
@@ -93,28 +97,43 @@ def profile():
     if 'username' not in session:
         return redirect(url_for('signin'))
     
+    username = session['username'] 
+    n = "SELECT u.uid FROM users as u WHERE u.username=%s;"
+    cursor = g.conn.execute(n, (username,))
+    uids = cursor.fetchone()
+    uid = uids['uid'].encode('ascii', 'replace')
+    cursor.close()
+ 
     if request.method == 'POST':
         tags = json.loads(request.form['tag'])
-        # Delete all entries from user in table
-        # Add all these tags
 
-        # Send back empty response
+        for tag in tags:
+            tag.encode('ascii', 'replace')
+            
+            n = "SELECT t.tid FROM tags as t WHERE t.name = %s;"
+            cursor = g.conn.execute(n,(tag,))
+            tids = cursor.fetchone()
+            tid = tids['tid'].encode('ascii','replace')
+            cursor.close()
+
+            q = "INSERT INTO chooses(uid, tid) values(%s,%s);"
+            cursor = g.conn.execute(q, (uid, tag,))
+            cursor.close()
+
         return ('', 204)
 
     elif request.method == 'GET':
-        username = session['username']
-        
-        # Give back all_tags and user_tags instead of this bs
+       
+        # Give back all_tags and user_tags
 
         all_tags = []
-        p = "SELECT t.name FROM tags;"
+        p = "SELECT t.name FROM tags as t;"
         cursor = g.conn.execute(p)
         for result in cursor:
             all_tags.append(result['name'])
         cursor.close()
 
-        q = "SELECT t.name as name FROM users as u INNER JOIN chooses as c \
-            ON u.uid = c.uid INNER JOIN tags as t ON c.tid = t.tid WHERE u.username = %s;" 
+        q = "SELECT t.name FROM tags as t INNER JOIN chooses as c ON c.tid = t.tid WHERE c.uid = %s;" 
 
         my_tags = []
         cursor = g.conn.execute(q, (username,)) 
