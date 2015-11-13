@@ -114,23 +114,7 @@ def profile():
             tags.append(result['name'])
         cursor.close()
 
-        q = "SELECT p.name FROM users as u \
-            INNER JOIN chooses as c ON u.uid = c.uid \
-            INNER JOIN tags as t ON c.tid = t.tid \
-            INNER JOIN described_by as d ON t.tid = d.tid \
-            INNER JOIN podcasts as p ON d.pid = p.pid \
-            WHERE u.username = %s AND p.pid NOT IN \
-            (SELECT r.pid FROM records as r \
-            INNER JOIN users as u ON r.uid = u.uid \
-            WHERE u.username =  %s) LIMIT 1;" 
-
-        cursor = g.conn.execute(q, (username,username,))
-        podcasts = cursor.fetchone()
-        podcast = podcasts['name'].encode('ascii', 'replace')
-        cursor.close()
-
-        
-        return render_template('profile.html', tags=tags, podcast=podcast)
+        return render_template('profile.html', tags=tags)
 
 @app.route('/static/<filename>')
 def play(filename):
@@ -140,6 +124,22 @@ def play(filename):
      
     username = session['username']
     
+    q = "SELECT p.name FROM users as u \
+        INNER JOIN chooses as c ON u.uid = c.uid \
+        INNER JOIN tags as t ON c.tid = t.tid \
+        INNER JOIN described_by as d ON t.tid = d.tid \
+        INNER JOIN podcasts as p ON d.pid = p.pid \
+        WHERE u.username = %s AND p.pid NOT IN \
+        (SELECT r.pid FROM records as r \
+        INNER JOIN users as u ON r.uid = u.uid \
+        WHERE u.username =  %s) LIMIT 1;" 
+
+    cursor = g.conn.execute(q, (username,username,))
+    podcasts = cursor.fetchone()
+    podcast = podcasts['name'].encode('ascii', 'replace')
+    cursor.close()
+
+
     n = "SELECT p.pid FROM podcasts as p WHERE p.name=%s;"
     cursor = g.conn.execute(n, (filename,))
     pids = cursor.fetchone()

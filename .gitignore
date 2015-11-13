@@ -1,4 +1,5 @@
 .*
+*.pyc
 webserver/app/*.pyc
 webserver/bin/*
 webserver/include/*
