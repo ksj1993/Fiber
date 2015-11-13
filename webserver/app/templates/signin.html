@@ -4,6 +4,15 @@
 <div class="mdl-layout__container contact-form">
   <h3>Sign In</h3>
   <form class="form-group" role="form" method="POST" action="{{ url_for('signin') }}">
+
+    {% for message in form.username.errors %}
+      <div class="flash">{{ message }}</div>
+    {% endfor %}
+     
+    {% for message in form.password.errors %}
+      <div class="flash">{{ message }}</div>
+    {% endfor %}
+
     {{ form.hidden_tag() }}
     <div class="mdl-textfield mdl-js-textfield">
       {{ form.username(class="mdl-textfield__input", type="text") }}

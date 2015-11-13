@@ -1,16 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
-<div>
-<h3> Welcome {{ session['username']}}! <h3>
-<p> Your tags: </p>
-{% for n in tags %}
-<div> {{ n }} </div>
-{% endfor %}
-<br>
-<p> Your podcast queue: </p>
-{% for n in podcasts %}
-<a href="/static/{{ n }}"> {{ n }} </a> </div>
-{% endfor %}
-</div>
-{% endblock %}
 
+<div class="mdl-layout__container contact-form">
+  <h2>Welcome, {{ session['username']}}! </h2>
+
+   <h6> Select your tags and get started on discovering podcasts: </h6>
+   {% for tag in tags %}
+   	<!-- Primary-colored flat button -->
+   	<button class="mdl-button mdl-js-button mdl-button--primary tag" id="{{tag}}">
+   	  {{ tag }}
+   	</button>
+   {% endfor %}
+   <br>
+   <br>
+   <br>
+    <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+    	id="tagSubmit">
+    	SAVE CHOICES
+    </button>
+   <br>
+   <br>
+   <a href="{{ url_for('index') }}">
+    <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
+    	START LISTENING
+    </button>
+   </a>
+</div>
+
+{% endblock %}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python2.7
-import os
+import os, json
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response, flash, session, url_for
@@ -61,36 +61,47 @@ def signup():
     elif request.method == 'GET':
         return render_template('signup.html', form=form)
 
-@app.route('/profile')
+@app.route('/profile', methods=["POST", "GET"])
 def profile():
     if 'username' not in session:
         return redirect(url_for('signin'))
-        
-    q = "SELECT username FROM Users WHERE username=%s"
-    username = session['username']
-    cursor = g.conn.execute(q, (username,))
-    user = cursor.fetchone()
-    cursor.close()
-    if user is None:
-        return redirect(url_for('signin'))
-    else:
-        tags = []
-        q = "SELECT t.name as name FROM users as u INNER JOIN chooses as c \
-            ON u.uid = c.uid INNER JOIN tags as t ON c.tid = t.tid WHERE u.username = %s" 
-        cursor = g.conn.execute(q, (username,)) 
-        for result in cursor:
-            tags.append(result['name'])
-        cursor.close()
+    
+    if request.method == 'POST':
+        tags = json.loads(request.form['tag'])
+        # Delete all entries from user in table
+        # Add all these tags
 
-        podcasts = []
-        q = "SELECT p.name as name FROM users as u INNER JOIN chooses as c ON u.uid = c.uid \
-             INNER JOIN tags as t ON c.tid = t.tid INNER JOIN described_by as d  \
-             ON t.tid = d.tid INNER JOIN podcasts as p ON d.pid = p.pid WHERE u.username = %s"
+        # Send back empty response
+        return ('', 204)
+
+    elif request.method == 'GET':
+        q = "SELECT username FROM Users WHERE username=%s"
+        username = session['username']
         cursor = g.conn.execute(q, (username,))
-        for result in cursor:
-            podcasts.append(result['name'])
+        user = cursor.fetchone()
         cursor.close()
-        return render_template('profile.html', tags=tags, podcasts=podcasts)
+        if user is None:
+            return redirect(url_for('signin'))
+        else:
+            # Send all available tags and there selected tags, all_tags, selected_tags
+
+            tags = []
+            q = "SELECT t.name as name FROM users as u INNER JOIN chooses as c \
+                ON u.uid = c.uid INNER JOIN tags as t ON c.tid = t.tid WHERE u.username = %s" 
+            cursor = g.conn.execute(q, (username,)) 
+            for result in cursor:
+                tags.append(result['name'])
+            cursor.close()
+
+            podcasts = []
+            q = "SELECT p.name as name FROM users as u INNER JOIN chooses as c ON u.uid = c.uid \
+                 INNER JOIN tags as t ON c.tid = t.tid INNER JOIN described_by as d  \
+                 ON t.tid = d.tid INNER JOIN podcasts as p ON d.pid = p.pid WHERE u.username = %s"
+            cursor = g.conn.execute(q, (username,))
+            for result in cursor:
+                podcasts.append(result['name'])
+            cursor.close()
+            return render_template('profile.html', tags=tags, podcasts=podcasts)
 
 @app.route('/static/<filename>')
 def play(filename):
