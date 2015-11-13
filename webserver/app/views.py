@@ -93,39 +93,58 @@ def profile():
     if 'username' not in session:
         return redirect(url_for('signin'))
         
-    q = "SELECT username FROM Users WHERE username=%s"
     username = session['username']
-    cursor = g.conn.execute(q, (username,))
-    user = cursor.fetchone()
+    
+    tags = []
+    q = "SELECT t.name as name FROM users as u INNER JOIN chooses as c \
+        ON u.uid = c.uid INNER JOIN tags as t ON c.tid = t.tid WHERE u.username = %s" 
+    cursor = g.conn.execute(q, (username,)) 
+    for result in cursor:
+        tags.append(result['name'])
     cursor.close()
-    if user is None:
-        return redirect(url_for('signin'))
-    else:
-        tags = []
-        q = "SELECT t.name as name FROM users as u INNER JOIN chooses as c \
-            ON u.uid = c.uid INNER JOIN tags as t ON c.tid = t.tid WHERE u.username = %s" 
-        cursor = g.conn.execute(q, (username,)) 
-        for result in cursor:
-            tags.append(result['name'])
-        cursor.close()
 
-        podcasts = []
-        q = "SELECT p.name FROM users as u \
-            INNER JOIN chooses as c ON u.uid = c.uid \
-            INNER JOIN tags as t ON c.tid = t.tid \
-            INNER JOIN described_by as d ON t.tid = d.tid \
-            INNER JOIN podcasts as p ON d.pid = p.pid \
-            WHERE u.username = %s AND p.pid NOT IN \
-            (SELECT r.pid FROM records as r \
-            INNER JOIN users as u ON r.uid = u.uid WHERE u.username =  %s);" 
-        cursor = g.conn.execute(q, (username,))
-        for result in cursor:
-            podcasts.append(result['name'])
-        cursor.close()
-        return render_template('profile.html', tags=tags, podcasts=podcasts)
+    q = "SELECT p.name FROM users as u \
+        INNER JOIN chooses as c ON u.uid = c.uid \
+        INNER JOIN tags as t ON c.tid = t.tid \
+        INNER JOIN described_by as d ON t.tid = d.tid \
+        INNER JOIN podcasts as p ON d.pid = p.pid \
+        WHERE u.username = %s AND p.pid NOT IN \
+        (SELECT r.pid FROM records as r \
+        INNER JOIN users as u ON r.uid = u.uid \
+        WHERE u.username =  %s) LIMIT 1;" 
+
+    cursor = g.conn.execute(q, (username,username,))
+    podcasts = cursor.fetchone()
+    podcast = podcasts['name'].encode('ascii', 'replace')
+    cursor.close()
+
+    
+    return render_template('profile.html', tags=tags, podcast=podcast)
 
 @app.route('/static/<filename>')
 def play(filename):
+   
+    if 'username' not in session:
+        return redirect(url_for('signin'))
+     
+    username = session['username']
+    
+    n = "SELECT p.pid FROM podcasts as p WHERE p.name=%s;"
+    cursor = g.conn.execute(n, (filename,))
+    pids = cursor.fetchone()
+    pid = pids['pid'].encode('ascii', 'replace')
+    cursor.close()
+    
+    n = "SELECT u.uid FROM users as u WHERE u.username=%s;"
+    cursor = g.conn.execute(n, (username,))
+    uids = cursor.fetchone()
+    uid = uids['uid'].encode('ascii', 'replace')
+    cursor.close()
+    
+    p = "INSERT INTO records(pid, uid) values (%s,%s)"
+    cursor = g.conn.execute(p, (pid, uid,))
+    cursor.close()
+    print "Inserted record into records table"
     return render_template('play.html', music_file=filename)
 
 @app.route('/contact')
