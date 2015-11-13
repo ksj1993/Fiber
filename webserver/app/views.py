@@ -37,6 +37,27 @@ def teardown_request(exception):
 def index():
     return render_template("index.html")
 
+@app.route('/upload', methods=["POST", "GET"])
+def upload():
+    form = UploadForm()
+
+    if request.method == 'POST':
+        if form.validate() == False:
+            return render_template('upload.html', form=form)
+        else:
+            oid = str(form.oid.data)
+            name = str(form.name.data)
+            poddate = str(form.poddate.data)
+            descr = form.descr.data
+            descr.encode('ascii', 'replace')
+            q = "INSERT INTO podcasts(oid, name, date, descr) values (%s,%s,%s,%s);"
+            cursor = g.conn.execute(q,(oid, name, poddate, descr,))
+            cursor.close()
+            print "New podcast inserted"
+            return redirect(url_for('upload'))
+    elif request.method == 'GET':
+        return render_template('upload.html', form=form)
+
 # from tutorial http://code.tutsplus.com/tutorials/intro-to-flask-signing-in-and-out--net-29982
 @app.route('/signup', methods=["POST", "GET"])
 def signup():

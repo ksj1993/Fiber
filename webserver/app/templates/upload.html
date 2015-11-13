@@ -1,0 +1,25 @@
+<html>
+<body>
+  <h2>Upload</h2>
+    </br></br>
+
+  <form action="{{ url_for('upload') }}" method=post>
+    {{ form.hidden_tag() }}
+     
+    {{ form.oid.label }}
+    {{ form.oid }}
+     
+    {{ form.name.label }}
+    {{ form.name }}
+     
+    {{ form.poddate.label }}
+    {{ form.poddate }}
+    
+    {{ form.descr.label }}
+    {{ form.descr  }}
+     
+    {{ form.submit }}
+  </form>
+    
+</body>
+</html>
