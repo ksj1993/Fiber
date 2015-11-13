@@ -16,10 +16,10 @@ music_dir = '/home/azureuser/Fiber/webserver/static'
 def before_request():
     try:
         g.conn = engine.connect()
-        q = "SELECT username FROM Users"
-        cursor = g.conn.execute(q)
-        user = cursor.fetchone()
-        print user
+        if 'username' in session:
+            print 'Username' + str(session['username'])
+        else:
+            print 'Unknown user'
     except:
         print "uh oh, problem connecting to database"
         import traceback; traceback.print_exc()
