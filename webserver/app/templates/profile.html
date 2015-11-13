@@ -5,12 +5,27 @@
   <h2>Welcome, {{ session['username']}}! </h2>
 
    <h6> Select your tags and get started on discovering podcasts: </h6>
-   {% for tag in tags %}
-   	<!-- Primary-colored flat button -->
-   	<button class="mdl-button mdl-js-button mdl-button--primary tag" id="{{tag}}">
-   	  {{ tag }}
-   	</button>
-   {% endfor %}
+
+    <div class="tags">
+		{% for tag in all_tags %}
+			<button class="mdl-button mdl-js-button mdl-button--primary tag" id="{{tag}}">
+			  {{ tag }}
+			</button>
+		{% endfor %}
+	</div>
+
+   <script>
+   var mytags = '{{ my_tags }}';
+   window.tags = [];
+   $(".tag").each(function(){
+		if(mytags.indexOf($(this).attr('id')) > -1) {
+				window.tags.push(tag);
+				$(this).toggleClass('mdl-button--accent mdl-button--primary');
+				$(this).addClass('selected-tag');
+			}
+	});
+   </script>
+
    <br>
    <br>
    <br>

@@ -107,7 +107,7 @@ def profile():
         # Give back all_tags and user_tags instead of this bs
 
         all_tags = []
-        p = "SELECT t.name FROM tags;"
+        p = "SELECT t.name FROM tags AS t;"
         cursor = g.conn.execute(p)
         for result in cursor:
             all_tags.append(result['name'])
@@ -121,11 +121,11 @@ def profile():
         for result in cursor:
             my_tags.append(result['name'])
         cursor.close()
-
+        print my_tags
         return render_template('profile.html', all_tags=all_tags, my_tags=my_tags)
 
-@app.route('/static/<filename>')
-def play(filename):
+@app.route('/play')
+def play():
    
     if 'username' not in session:
         return redirect(url_for('signin'))
@@ -149,22 +149,22 @@ def play(filename):
 
 
     n = "SELECT p.pid FROM podcasts as p WHERE p.name=%s;"
-    cursor = g.conn.execute(n, (filename,))
+    cursor = g.conn.execute(n, (podcast,))
     pids = cursor.fetchone()
-    pid = pids['pid'].encode('ascii', 'replace')
+    pid = pids['pid']
     cursor.close()
     
     n = "SELECT u.uid FROM users as u WHERE u.username=%s;"
     cursor = g.conn.execute(n, (username,))
     uids = cursor.fetchone()
-    uid = uids['uid'].encode('ascii', 'replace')
+    uid = uids['uid']
     cursor.close()
     
     p = "INSERT INTO records(pid, uid) values (%s,%s)"
     cursor = g.conn.execute(p, (pid, uid,))
     cursor.close()
     print "Inserted record into records table"
-    return render_template('play.html', filename = filename)
+    return render_template('play.html', podcast = podcast)
 
 @app.route('/contact')
 def contact():

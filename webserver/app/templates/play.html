@@ -1,7 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-<!-- {{ queue }} -->
-<audio controls>
-<source src="{{ filename }}" type="audio/mp3">
-</audio>
+<!-- static/podcasts/{{podcast}}[.mp3] -->
+<!-- temp: static/podcasts/temp.mp3 -->
+
+<div class="mdl-layout__container contact-form">
+  <h2>Podcast Player</h2>
+   <br>
+   <br>
+   <br>
+   <a href="{{ url_for('play') }}">
+    <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
+    	SKIP PODCAST
+    </button>
+   </a>
+</div>
+
 {% endblock %}

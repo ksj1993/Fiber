@@ -1,7 +1,7 @@
 $(document).ready(function() {
 	console.log("oh god");
-	var tags = [];
-
+	var tags = window.tags;
+	
 	$(".tag").each(function(){
 		$(this).click(function(e){
 			var tag = $(this).attr('id');
