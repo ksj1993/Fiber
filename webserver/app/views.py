@@ -105,7 +105,7 @@ def profile():
     cursor.close()
  
     if request.method == 'POST':
-        r = "DELETE FROM tags;"
+        r = "DELETE FROM chooses;"
         g.conn.execute(r);
 
         tags = json.loads(request.form['tag'])
@@ -120,7 +120,7 @@ def profile():
             cursor.close()
 
             q = "INSERT INTO chooses(uid, tid) values(%s,%s);"
-            cursor = g.conn.execute(q, (uid, tag,))
+            cursor = g.conn.execute(q, (uid, tid,))
             cursor.close()
 
         return ('', 204)
@@ -154,7 +154,7 @@ def play():
      
     username = session['username']
     
-    q = "SELECT p.name FROM users as u \
+    q = "SELECT p.name, p.date, p.descr FROM users as u \
         INNER JOIN chooses as c ON u.uid = c.uid \
         INNER JOIN tags as t ON c.tid = t.tid \
         INNER JOIN described_by as d ON t.tid = d.tid \
@@ -166,7 +166,9 @@ def play():
 
     cursor = g.conn.execute(q, (username,username,))
     podcasts = cursor.fetchone()
-    podcast = podcasts['name'].encode('ascii', 'replace')
+    podcast_name = podcasts['name'].encode('ascii', 'replace')
+    podcast_descr = podcasts['descr'].encode('ascii', 'replace')
+
     cursor.close()
 
 
@@ -186,7 +188,7 @@ def play():
     cursor = g.conn.execute(p, (pid, uid,))
     cursor.close()
     print "Inserted record into records table"
-    return render_template('play.html', podcast = podcast)
+    return render_template('play.html', podcast = podcast_name, descr = podcast_descr)
 
 @app.route('/contact')
 def contact():
