@@ -105,6 +105,9 @@ def profile():
     cursor.close()
  
     if request.method == 'POST':
+        r = "DELETE FROM tags;"
+        g.conn.execute(r);
+
         tags = json.loads(request.form['tag'])
 
         for tag in tags:
