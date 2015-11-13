@@ -19,7 +19,7 @@
    window.tags = [];
    $(".tag").each(function(){
 		if(mytags.indexOf($(this).attr('id')) > -1) {
-				window.tags.push(tag);
+				window.tags.push($(this).attr('id'));
 				$(this).toggleClass('mdl-button--accent mdl-button--primary');
 				$(this).addClass('selected-tag');
 			}
