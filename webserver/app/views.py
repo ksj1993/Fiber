@@ -1,5 +1,5 @@
 #!/usr/bin/env python2.7
-import os, json
+import os, json, eyed3
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response, flash, session, url_for
@@ -143,7 +143,6 @@ def profile():
 
 @app.route('/play')
 def play():
-   
     if 'username' not in session:
         return redirect(url_for('signin'))
      
@@ -168,7 +167,7 @@ def play():
 
 
     q = "SELECT p.pid FROM podcasts as p WHERE p.name=%s;"
-    cursor = g.conn.execute(q, (podcast,))
+    cursor = g.conn.execute(q, (podcast_name,))
     pids = cursor.fetchone()
     pid = pids['pid']
     cursor.close()
@@ -186,19 +185,21 @@ def play():
     q = "UPDATE podcasts SET playcount = playcount + 1 WHERE pid =%s"
     cursor = g.conn.execute(q, (pid,))
     cursor.close()
-    return render_template('play.html', podcast = podcast_name, descr = podcast_descr)
+    metadata = {"descr": podcast_descr}
+    
+    dir = os.path.dirname(__file__)
+    tag = eyed3.load(os.path.join(dir, 'static/assets/test.mp3')).tag
 
-@app.route('/contact')
-def contact():
-    form = ContactForm()
-    if request.method == 'POST':
-        if form.validate() == False:
-            flash('All fields are required.')
-            return render_template('contact.html', form=form)
-        else:
-            return "Form posted"
-    elif request.method == 'GET':
-        return render_template('contact.html', form=form)
+    metadata['artist'] = tag.artist
+    metadata['album'] = tag.album
+    metadata['title'] = tag.title
+
+    print podcast_descr
+    return render_template('play.html', podcast = podcast_name, metadata = metadata)
+
+@app.route('/about')
+def about():
+   return render_template('about.html')
 
 @app.route('/org', methods=['GET', 'POST'])
 def org():

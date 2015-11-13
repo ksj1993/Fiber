@@ -10,7 +10,7 @@
   
   <script src="https://storage.googleapis.com/code.getmdl.io/1.0.0/material.min.js"></script>
   <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-  <script src="/audiojs/audio.min.js"></script>
+  <script src="static/js/audio.min.js"></script>
   <script src="static/js/main.js"></script>
 
   </head>
@@ -27,8 +27,7 @@
           <!-- Navigation -->
           <nav class="mdl-navigation document-navigation">
             <a class="mdl-navigation__link text" href="{{ url_for('index') }}">Home</a>
-            <a class="mdl-navigation__link text" href="{{ url_for('index') }}">About Us</a>
-            <a class="mdl-navigation__link text" href="{{ url_for('contact') }}">Contact</a>
+            <a class="mdl-navigation__link text" href="{{ url_for('about') }}">About Us</a>
             {% if 'username' in session %}
             <a class="mdl-navigation__link text" href="{{ url_for('profile') }}">Profile</a>
             <a class="mdl-navigation__link text" href="{{ url_for('signout') }}">Sign Out</a>

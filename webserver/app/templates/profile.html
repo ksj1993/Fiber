@@ -16,6 +16,7 @@
 
    <script>
    var mytags = '{{ my_tags }}';
+   console.log(mytags);
    window.tags = [];
    $(".tag").each(function(){
 		if(mytags.indexOf($(this).attr('id')) > -1) {
@@ -35,7 +36,7 @@
     </button>
    <br>
    <br>
-   <a href="{{ url_for('index') }}">
+   <a href="{{ url_for('play') }}">
     <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
     	START LISTENING
     </button>
