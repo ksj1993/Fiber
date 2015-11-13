@@ -1,33 +1,24 @@
 {% extends "base.html" %}
- 
 {% block content %}
-  <h2>Sign up</h2>
- 
-  {% for message in form.username.errors %}
-    <div class="flash">{{ message }}</div>
-  {% endfor %}
-   
-  {% for message in form.email.errors %}
-    <div class="flash">{{ message }}</div>
-  {% endfor %}
-   
-  {% for message in form.password.errors %}
-    <div class="flash">{{ message }}</div>
-  {% endfor %}
-   
-  <form action="{{ url_for('signup') }}" method=post>
+
+<div class="mdl-layout__container contact-form">
+  <h3>Sign Up</h3>
+  <form class="form-group" role="form" method="POST" action="{{ url_for('signup') }}">
     {{ form.hidden_tag() }}
-     
-    {{ form.username.label }}
-    {{ form.username }}
-     
-    {{ form.email.label }}
-    {{ form.email }}
-     
-    {{ form.password.label }}
-    {{ form.password }}
-     
-    {{ form.submit }}
+    <div class="mdl-textfield mdl-js-textfield">
+      {{ form.username(class="mdl-textfield__input", type="text") }}
+      <label class="mdl-textfield__label">{{ form.username.label }}</label>
+    </div><br>
+    <div class="mdl-textfield mdl-js-textfield">
+      {{ form.email(class="mdl-textfield__input", type="text") }}
+      <label class="mdl-textfield__label">{{ form.email.label }}</label>
+    </div><br>
+    <div class="mdl-textfield mdl-js-textfield">
+      {{ form.password(class="mdl-textfield__input", type="text") }}
+      <label class="mdl-textfield__label">{{ form.password.label }} (plaintext)</label>
+    </div><br>
+    <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">SUBMIT</button>
   </form>
-     
+</div>
+
 {% endblock %}
