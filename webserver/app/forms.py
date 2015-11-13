@@ -43,7 +43,7 @@ class SignupForm(Form):
     def validate(self):
         if not Form.validate(self):
             return False
-        q = "SELECT  FROM Users WHERE email = ?"        
+        q = "SELECT  FROM Users WHERE email = %s"        
         cursor = g.conn.execute(q, (self.email.data.lower(),))
         if cursor.fetchone():
             print "Email is taken"

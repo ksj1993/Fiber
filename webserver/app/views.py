@@ -17,7 +17,7 @@ def before_request():
     try:
         g.conn = engine.connect()
         if 'username' in session:
-            print 'Username' + str(session['username'])
+            print 'Username: ' + str(session['username'])
         else:
             print 'Unknown user'
     except:
@@ -45,10 +45,13 @@ def upload():
         if form.validate() == False:
             return render_template('upload.html', form=form)
         else:
-            oid = str(form.oid.data)
-            name = str(form.name.data)
-            poddate = str(form.poddate.data)
+            oid = form.oid.data
+            name = form.name.data
+            poddate = form.poddate.data
             descr = form.descr.data
+            oid.encode('ascii', 'replace')
+            name.encode('ascii', 'replace')
+            poddate.encode('ascii', 'replace')
             descr.encode('ascii', 'replace')
             q = "INSERT INTO podcasts(oid, name, date, descr) values (%s,%s,%s,%s);"
             cursor = g.conn.execute(q,(oid, name, poddate, descr,))
@@ -69,12 +72,15 @@ def signup():
         if form.validate() == False:
             return render_template('signup.html', form=form)
         else:
-            username = str(form.username.data)
-            email = str(form.email.data)
-            password = str(form.password.data)
+            username = form.username.data
+            email = form.email.data
+            password = form.password.data
+            username.encode('ascii', 'replace')
+            email.encode('ascii', 'replace')
+            password.encode('ascii', 'replace')
             
-            q = "INSERT INTO Users(username, password, email) VALUES (%s,%s,%s);" 
-            cursor = g.conn.execute(q,(username, pwd, email,))
+            q = "INSERT INTO Users(username, pwd, email) VALUES (%s,%s,%s);" 
+            cursor = g.conn.execute(q,(username, password, email,))
             cursor.close()
             session['username'] =username 
             return redirect(url_for('profile'))
