@@ -50,7 +50,6 @@ class SignupForm(Form):
             cursor.close()
             return False
 
-#return False
         cursor.close()
         return True
 
