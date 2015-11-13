@@ -101,7 +101,7 @@ def profile():
     n = "SELECT u.uid FROM users as u WHERE u.username=%s;"
     cursor = g.conn.execute(n, (username,))
     uids = cursor.fetchone()
-    uid = uids['uid'].encode('ascii', 'replace')
+    uid = uids['uid']
     cursor.close()
  
     if request.method == 'POST':
@@ -116,7 +116,7 @@ def profile():
             n = "SELECT t.tid FROM tags as t WHERE t.name = %s;"
             cursor = g.conn.execute(n,(tag,))
             tids = cursor.fetchone()
-            tid = tids['tid'].encode('ascii','replace')
+            tid = tids['tid']
             cursor.close()
 
             q = "INSERT INTO chooses(uid, tid) values(%s,%s);"
@@ -139,7 +139,7 @@ def profile():
         q = "SELECT t.name FROM tags as t INNER JOIN chooses as c ON c.tid = t.tid WHERE c.uid = %s;" 
 
         my_tags = []
-        cursor = g.conn.execute(q, (username,)) 
+        cursor = g.conn.execute(q, (uid,)) 
         for result in cursor:
             my_tags.append(result['name'])
         cursor.close()

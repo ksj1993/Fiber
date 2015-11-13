@@ -1,7 +1,7 @@
 $(document).ready(function() {
 	console.log("oh god");
 	var tags = window.tags;
-	
+
 	$(".tag").each(function(){
 		$(this).click(function(e){
 			var tag = $(this).attr('id');
@@ -25,4 +25,8 @@ $(document).ready(function() {
 		console.log(JSON.stringify(tags));
 		$.post('/profile', {'tag': JSON.stringify(tags)});
 	});
+
+  	audiojs.events.ready(function() {
+    	var as = audiojs.createAll();
+  	});
 });
