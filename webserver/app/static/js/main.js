@@ -1,5 +1,4 @@
 $(document).ready(function() {
-	console.log("oh god");
 	var tags = window.tags;
 
 	$(".tag").each(function(){
