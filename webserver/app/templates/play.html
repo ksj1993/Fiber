@@ -1,10 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
-<!-- static/podcasts/{{podcast}}[.mp3] -->
-<!-- temp: static/podcasts/temp.mp3 -->
-
 <div class="mdl-layout__container contact-form">
   <h2>Podcast Player</h2>
+  	<div class="podcast">
+      <div class="podcast-text">
+        <h5>Title: {{metadata.title}}</h5>
+        <h5>Artist: {{metadata.artist}}</h5>
+        <h5>Album: {{metadata.album}}</h5>
+        <h5>Description: {{metadata.descr}}</h5>
+        
+        <br>
+      <!-- static/podcasts/{{podcast}}[.mp3] -->
+      <audio src="static/assets/test.mp3" preload="auto" />
+      </div>
+	</div>
    <br>
    <br>
    <br>

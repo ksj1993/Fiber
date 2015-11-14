@@ -1,5 +1,5 @@
 #!/usr/bin/env python2.7
-import os, json
+import os, json, eyed3
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response, flash, session, url_for
@@ -204,7 +204,6 @@ def play():
     cursor.close()
 
 
-    # retrieve uid for current user 
     q = "SELECT u.uid FROM users as u WHERE u.username=%s;"
     cursor = g.conn.execute(q, (username,))
     uids = cursor.fetchone()
@@ -220,9 +219,23 @@ def play():
     q = "UPDATE podcasts SET playcount = playcount + 1 WHERE pid =%s"
     cursor = g.conn.execute(q, (pid,))
     cursor.close()
+    
+    
+    
+    dir = os.path.dirname(__file__)
+    tag = eyed3.load(os.path.join(dir, 'static/assets/test.mp3')).tag
+    
+    metadata = {"descr": podcast_descr}
+    metadata['artist'] = tag.artist
+    metadata['album'] = tag.album
+    metadata['title'] = tag.title
 
-    # return podcast info and play page
-    return render_template('play.html', podcast = podcast_name, descr = podcast_descr)
+    print podcast_descr
+    return render_template('play.html', podcast = podcast_name, metadata = metadata)
+
+@app.route('/about')
+def about():
+   return render_template('about.html')
 
 # org page displays analytics
 @app.route('/org', methods=['GET', 'POST'])
