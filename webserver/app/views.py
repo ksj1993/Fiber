@@ -198,6 +198,9 @@ def play():
     # extract podcast information
     cursor = g.conn.execute(q, (username,username,))
     podcasts = cursor.fetchone()
+    if podcasts is None:
+        return redirect(url_for('profile')) 
+
     podcast_name = podcasts['name'].encode('ascii', 'replace')
     podcast_descr = podcasts['descr'].encode('ascii', 'replace')
     pid = podcasts['pid']
