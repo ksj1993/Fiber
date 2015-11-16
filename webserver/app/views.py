@@ -224,7 +224,10 @@ def play():
     cursor.close()
     
     dir = os.path.dirname(__file__)
-    tag = eyed3.load(os.path.join(dir, 'static/assets/test.mp3')).tag
+
+    print 'static/assets/' + podcast_name #DEBUG
+
+    tag = eyed3.load(os.path.join(dir, 'static/assets/' + podcast_name)).tag
     
     metadata = {"descr": podcast_descr}
     metadata['artist'] = tag.artist
@@ -316,6 +319,4 @@ def orgsignout():
         return redirect(url_for('orgsignin'))
 
     session.pop('orguser', None)
-    return redirect(url_for('signin'))
-
     return redirect(url_for('index'))

@@ -4,6 +4,12 @@
   margin: 0 auto;
 }
 
+.table {
+  width: 50%;
+  display: table;
+  margin: 0 auto;
+}
+
 .podcast {
   display: table;
   margin: 0 auto;

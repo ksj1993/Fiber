@@ -1,6 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
 
-<p> Test </p>
+<div class="mdl-layout__container contact-form">
+  <div class="content">
+    <br>
+    <br>
+    <h4>
+    Here are the podcast analytics for your organization:
+    </h4>
+    <br>
+    <br>
+    <table class="mdl-data-table mdl-js-data-table table">
+    	<thead>
+    	    <tr>
+    	      <th class="mdl-data-table__cell--non-numeric">Podcast</th>
+    	      <th class="mdl-data-table__cell--non-numeric">Number Of Listens</th>
+    	    </tr>
+    	  </thead>
+    	  <tbody>  	
+	      	{% for name, playcount in info.iteritems() %}
+	            <tr>
+	              <td class="mdl-data-table__cell--non-numeric">{{name}}</td>
+	              <td>{{playcount}}</td>
+	            </tr>
+	      	{% endfor %}      
+    	  </tbody>
+    </table>
+    <br>
+    <br>
+	<a href="{{url_for('orgsignout')}}">
+		<button class="mdl-button mdl-button--raised mdl-button--colored">Sign Out</button>
+	</a>
+  </div>
+</div>
 
 {% endblock %}
