@@ -11,13 +11,14 @@
 }
 
 .podcast {
+  width: 50%;
   display: table;
   margin: 0 auto;
 }
 .podcast-text {
+  width: 50%;
   display: table;
   margin: 0 auto;
-  text-align: left;
 }
 
 .selected-tag {
