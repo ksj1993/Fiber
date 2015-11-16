@@ -19,7 +19,8 @@ if __name__ == "__main__":
 #        app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)
 #
 #    run()
-
+    print "starting server..."
     http_server = HTTPServer(WSGIContainer(app))
     http_server.listen(8111)
     IOLoop.instance().start()
+

@@ -16,11 +16,11 @@ def before_request():
     try:
         #connect to engine
         g.conn = engine.connect()
-        if 'username' in session:
-            # print username info for debugging
-            print 'Username: ' + str(session['username'])
-        else:
-            print 'Unknown user'
+#       if 'username' in session:
+#            # print username info for debugging
+#            print 'Username: ' + str(session['username'])
+#        else:
+#            print 'Unknown user'
     # print errors if cannot connect to DB
     except:
         print "uh oh, problem connecting to database"
@@ -223,8 +223,6 @@ def play():
     cursor = g.conn.execute(q, (pid,))
     cursor.close()
     
-    
-    
     dir = os.path.dirname(__file__)
     tag = eyed3.load(os.path.join(dir, 'static/assets/test.mp3')).tag
     
@@ -309,6 +307,7 @@ def signout():
         return redirect(url_for('signin'))
 
     session.pop('username', None)
+    return redirect(url_for('signin'))
 
 # orguser signout
 @app.route('/orgsignout')
@@ -317,5 +316,6 @@ def orgsignout():
         return redirect(url_for('orgsignin'))
 
     session.pop('orguser', None)
+    return redirect(url_for('signin'))
 
     return redirect(url_for('index'))
